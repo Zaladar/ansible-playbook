@@ -1,0 +1,42 @@
+---
+- name: Make sure we have a 'wheel' group.
+  group:
+    name: wheel
+    state: present
+
+- name: create greatoldone user and group.
+  user:
+    name: "greatoldone"
+    groups: "greatoldone"
+    password: {{gtoopassword|password_hash('sha512)}}
+    shell: /bin/bash
+    state: present
+
+- name: Allow 'greatoldone' group passwordless sudo.
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    backup: yes
+    regexp: '^%greatoldone'
+    line: '%greatoldone ALL=(ALL) NOPASSWD: ALL'
+    validate: visudo -cf %s 
+
+- name: password authentication not allowed.
+  lineinfile:
+    dest: /etc/ssh/sshd_config 
+    state: present
+    backup: yes
+    regexp: '^PasswordAuthentication'
+    line: 'PasswordAuthentication no'
+  notify:
+    - restart ssh 
+
+- name: ssh as root not allowed.
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    state: present
+    regexp: '^PermitRootLogin'
+    line: 'PermitRootLogin no'
+  notify:
+    - restart ssh 
+...

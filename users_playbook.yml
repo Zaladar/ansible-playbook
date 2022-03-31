@@ -1,0 +1,7 @@
+---
+- hosts: local
+  user: root
+  become: yes
+  roles:
+    - common
+...
