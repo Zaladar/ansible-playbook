@@ -8,9 +8,12 @@
   user:
     name: "greatoldone"
     groups: "greatoldone"
-    password: {{gtoopassword|password_hash('sha512)}}
+    password: {{gtoopassword|password_hash('sha512')}}
     shell: /bin/bash
+    home: /home/greatoldone
+    create_home: yes
     state: present
+    tags: users
 
 - name: Allow 'greatoldone' group passwordless sudo.
   lineinfile:
@@ -20,6 +23,7 @@
     regexp: '^%greatoldone'
     line: '%greatoldone ALL=(ALL) NOPASSWD: ALL'
     validate: visudo -cf %s 
+    tags: users
 
 - name: password authentication not allowed.
   lineinfile:
@@ -28,6 +32,7 @@
     backup: yes
     regexp: '^PasswordAuthentication'
     line: 'PasswordAuthentication no'
+    tags: users
   notify:
     - restart ssh 
 
@@ -37,6 +42,8 @@
     state: present
     regexp: '^PermitRootLogin'
     line: 'PermitRootLogin no'
+    tags: users
   notify:
     - restart ssh 
+
 ...
