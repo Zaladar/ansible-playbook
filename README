@@ -1,1 +1,3 @@
-don't forget to add --extra-vars='{"gtoopassword":"Hello world!"}'
+Don't forget to add --extra-vars='{"gtoopassword":"Hello world!"}' for admin user.
+Initial ansible playbooks for home equipment.
+we will se what this develops into in the future..
