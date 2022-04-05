@@ -1,0 +1,9 @@
+---
+- hosts: local
+  user: root
+  become: yes
+  roles:
+    - deep 
+
+
+...
