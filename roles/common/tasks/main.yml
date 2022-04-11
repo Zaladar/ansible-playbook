@@ -10,6 +10,7 @@
     groups: "greatoldone"
     password: "{{ gtoopassword|password_hash('sha512') }}"
     shell: /bin/bash
+    uid: 555
     home: /home/greatoldone
     create_home: yes
     state: present
