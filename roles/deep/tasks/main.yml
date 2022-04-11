@@ -6,7 +6,7 @@
 
 - name: print default zone
   debug:
-    msg: "default zone is: {{ default_zone.stdout }}"
+    msg: "default zone is: {{ default_zone }}"
 
 - name: add permitted networks to home zone
   firewalld:
@@ -42,5 +42,5 @@
 - name: set block as default zone in firewalld if not set
   command: firewall-cmd --set-default-zone=block
   tags: firewall
-  when: default_zone.stdout != "block"
+  when: default_zone != "block"
 ...
