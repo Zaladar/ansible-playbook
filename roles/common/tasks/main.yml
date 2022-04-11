@@ -4,7 +4,12 @@
     name: wheel
     state: present
 
-- name: create greatoldone user and group.
+- name: create greatoldone group.
+  group:
+    name: "greatoldone"
+    state: present
+
+- name: create greatoldone user.
   user:
     name: "greatoldone"
     groups: "greatoldone"
