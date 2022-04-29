@@ -63,8 +63,8 @@
   authorized_key:
     user: greatoldone
     state: present
-    key: ssh_keys.goo_key
+    key: "{{ item }}"
       #key: '{{ goo_key }}'
-      #with_items: "{{ goo_key }}"
+  with_items: "{{ ssh_keys.goo_key }}"
   tags: users
 ...
