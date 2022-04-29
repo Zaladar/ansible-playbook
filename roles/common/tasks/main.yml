@@ -1,7 +1,7 @@
 ---
-- name: Make sure we have a 'wheel' group.
+- name: Make sure we have a 'greatoldone' group.
   group:
-    name: wheel
+    name: "greatoldone"
     state: present
 
 - name: create greatoldone group.
@@ -13,7 +13,6 @@
   user:
     name: "greatoldone"
     groups: "greatoldone"
-    password: "{{ gtoopassword|password_hash('sha512') }}"
     shell: /bin/bash
     home: /home/greatoldone
     create_home: yes
@@ -28,6 +27,14 @@
     regexp: '^%greatoldone'
     line: '%greatoldone ALL=(ALL) NOPASSWD: ALL'
     validate: visudo -cf %s 
+  tags: users
+
+- name: Add ssh key to 'greatoldone'.
+  authorized_key:
+    user: greatoldone
+    state: present
+    key: '{{ item }}'
+  with_items: "{{ goo_key }}"
   tags: users
 
 - name: password authentication not allowed.
