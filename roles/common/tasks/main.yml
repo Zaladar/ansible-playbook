@@ -29,14 +29,6 @@
     validate: visudo -cf %s 
   tags: users
 
-- name: Add ssh key to 'greatoldone'.
-  authorized_key:
-    user: greatoldone
-    state: present
-    key: '{{ item }}'
-  with_items: "{{ goo_key }}"
-  tags: users
-
 - name: password authentication not allowed.
   lineinfile:
     dest: /etc/ssh/sshd_config 
@@ -66,4 +58,13 @@
     owner: root
     mode: '0644'
     backup: yes
+
+- name: Add ssh key to 'greatoldone'.
+  authorized_key:
+    user: greatoldone
+    state: present
+    key: ssh_keys.goo_key
+      #key: '{{ goo_key }}'
+      #with_items: "{{ goo_key }}"
+  tags: users
 ...
