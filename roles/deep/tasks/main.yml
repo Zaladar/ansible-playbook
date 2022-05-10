@@ -11,12 +11,14 @@
 - name: set drop as default zone in firewalld if not set
   command: firewall-cmd --set-default-zone=drop
   when: default_zone != "drop"
-  notify: reload firewalld
+  notify: restart firewalld
 
-- name: drop all incomming traffic
+- name: disable home zone
   firewalld:
-    zone: drop 
-    immediate: yes
+    zone: home
+    state: disabled
     permanent: yes
-  notify: reload firewalld
+    immediate: yes
+  tags: hardening
+  notify: restart firewalld
 ...

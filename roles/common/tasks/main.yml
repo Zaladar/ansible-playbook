@@ -110,6 +110,16 @@
   tags: firewall
   notify: restart firewalld
 
+- name: enable home zone
+  firewalld:
+    port: 1984/tcp
+    zone: home
+    state: enabled
+    permanent: yes
+    immediate: yes
+  tags: firewall
+  notify: restart firewalld
+    
 #this should cover for SFTP sa well since it is ssh ftp.
 #- name: add ssh service from goo to firewall
 #  firewalld:
