@@ -13,8 +13,6 @@
   when: default_zone != "drop"
   notify: reload firewalld
 
-- name: deny all incomming
-
 - name: drop all incomming traffic
   firewalld:
     zone: drop 
