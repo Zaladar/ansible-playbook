@@ -78,36 +78,67 @@
     msg: "default zone is: {{ default_zone }}"
   tags: firewall
 
-#this should cover for SFTP sa well since it is ssh ftp.
-- name: add ssh service from goo to firewall
+- name: create thedeep firewall zone
   firewalld:
-    zone: home
-    service: ssh
-    source: 192.168.50.244 
-    port: 1984
+    zone: thedeep
+    state: present 
+    permanent: yes
+  tags: firewall
+  notify: restart firewalld
+
+- name: Flush handlers 
+  meta: flush_handlers
+  tags: firewall
+
+- name: add source to thedeep
+  firewalld:
+    source: 192.168.50.244
+    zone: thedeep
     state: enabled
     immediate: yes
     permanent: yes
   tags: firewall
-  notify: reload firewalld
+  notify: restart firewalld
 
-    #- name: add nsf service to firewall
-    #  firewalld:
-    #    zone: home
-    #    service: nsf
-    #    port: 2049
-    #    state: enabled
-    #    immediate: yes
-    #    permanent: yes
-    #  tags: firewall
-    #  notify: reload firewall
+- name: add ssh port for thedeep
+  firewalld:
+    zone: thedeep
+    port: 1984/tcp
+    state: enabled
+    immediate: yes
+    permanent: yes
+  tags: firewall
+  notify: restart firewalld
+
+#this should cover for SFTP sa well since it is ssh ftp.
+#- name: add ssh service from goo to firewall
+#  firewalld:
+#    zone: home
+#    service: ssh
+#      #    port: 1984/tcp
+#    state: enabled
+#    immediate: yes
+#    permanent: yes
+#  tags: firewall
+#  notify: restart firewalld
+
+#- name: add nsf service to firewall
+#  firewalld:
+#    zone: home
+#    service: nsf
+#    port: 2049
+#    state: enabled
+#    immediate: yes
+#    permanent: yes
+#  tags: firewall
+#  notify: reload firewall
 
 #- name: add media server ports
 
-- name: set home as default zone in firewalld if not set
-  command: firewall-cmd --set-default-zone=home
+- name: set block as default zone in firewalld if not set
+  command: firewall-cmd --set-default-zone=block
   tags: firewall
-  when: default_zone != "home"
-
+  when: default_zone != "block"
+  notify: restart firewalld
 
 ...
