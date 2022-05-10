@@ -8,39 +8,17 @@
   debug:
     msg: "default zone is: {{ default_zone }}"
 
-- name: add permitted networks to home zone
-  firewalld:
-    zone: home
-    state: enabled
-    source: "{{ item }}"
-    immediate: yes
-    permanent: yes
-  tags: firewall
-  notify: reload firewalld
-  with_items: " {{ home_networks }}"
-
-- name: add ssh port to home zone
-  firewalld:
-    zone: home
-    service: ssh
-    state: enabled
-    immediate: yes
-    permanent: yes
-  tags: firewall
+- name: set drop as default zone in firewalld if not set
+  command: firewall-cmd --set-default-zone=drop
+  when: default_zone != "drop"
   notify: reload firewalld
 
-- name: remove ssh from public
+- name: deny all incomming
+
+- name: drop all incomming traffic
   firewalld:
-    zone: public
-    service: ssh
-    state: disabled
+    zone: drop 
     immediate: yes
     permanent: yes
-  tags: firewall
   notify: reload firewalld
-
-- name: set block as default zone in firewalld if not set
-  command: firewall-cmd --set-default-zone=block
-  tags: firewall
-  when: default_zone != "block"
 ...
