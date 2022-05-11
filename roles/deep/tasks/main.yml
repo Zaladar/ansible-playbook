@@ -21,4 +21,13 @@
     immediate: yes
   tags: hardening
   notify: restart firewalld
+
+- name: disable thedeep zone
+  firewalld:
+    zone: thedeep
+    state: disabled
+    permanent: yes
+    immediate: yes
+  tags: hardening
+  notify: restart firewalld
 ...
