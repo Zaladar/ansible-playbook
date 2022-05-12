@@ -1,3 +1,3 @@
-Don't forget to add --extra-vars='{"gtoopassword":"Hello world!"}' for admin user.
-Initial ansible playbooks for home equipment.
-we will se what this develops into in the future..
+Setup.yml is created for DNS and GOO system.
+Coming up is one for INFRA role, and the systems connected to that. 
+

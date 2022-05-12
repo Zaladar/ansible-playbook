@@ -1,0 +1,15 @@
+---
+
+
+- hosts: dns
+  user: pi
+  roles:
+    - common
+    - dns
+
+- hosts: goo
+  user: greatoldone
+  roles:
+    - common
+    - deep
+...
