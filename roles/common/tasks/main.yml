@@ -1,23 +1,25 @@
 ---
-- name: Make sure we have a 'greatoldone' group.
-  group:
-    name: "greatoldone"
-    state: present
+#- name: Make sure we have a 'greatoldone' group.
+#  group:
+#    name: "greatoldone"
+#    state: present
 
-- name: create greatoldone group.
-  group:
-    name: "greatoldone"
-    state: present
+      #- name: create greatoldone group.
+      #  group:
+      #    name: "greatoldone"
+      #    state: present
+      #  become: yes
 
 - name: create greatoldone user.
   user:
     name: "greatoldone"
-    groups: "greatoldone"
+      #groups: "greatoldone"
     shell: /bin/bash
     home: /home/greatoldone
     create_home: yes
     state: present
   tags: users
+  become: yes
 
 - name: Allow 'greatoldone' group passwordless sudo.
   lineinfile:
@@ -28,6 +30,7 @@
     line: '%greatoldone ALL=(ALL) NOPASSWD: ALL'
     validate: visudo -cf %s 
   tags: users
+  become: yes
 
 - name: password authentication not allowed.
   lineinfile:
@@ -36,7 +39,8 @@
     backup: yes
     regexp: '^PasswordAuthentication'
     line: 'PasswordAuthentication no'
-  tags: usersGG
+  tags: ssh 
+  become: yes
   notify:
     - restart ssh 
 
@@ -46,15 +50,25 @@
     state: present
     regexp: '^PermitRootLogin'
     line: 'PermitRootLogin no'
-  tags: users
+  tags: ssh
   notify:
     - restart ssh 
+
+#maybe ignore this
+#- name: SSH only on port 1984
+#  lineinfile:
+#    dest: /etc/ssh/sshd_config
+#    state: present
+#    regexp: '^#Port 22'
+#    line: 'Port 1984'
+#  tags: ssh
+#  notify:
+#    - restart ssh
 
 - name: copy hosts file
   copy:
     src: hosts
     dest: /etc/hosts
-    owner: root
     owner: root
     mode: '0644'
     backup: yes
@@ -64,7 +78,6 @@
     user: greatoldone
     state: present
     key: "{{ item }}"
-      #key: '{{ goo_key }}'
   with_items: "{{ ssh_keys.goo_key }}"
   tags: users
 
@@ -150,5 +163,12 @@
   tags: firewall
   when: default_zone != "block"
   notify: restart firewalld
+
+- name: install relevant apt packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ packages }}"
+  tags: packages
 
 ...
