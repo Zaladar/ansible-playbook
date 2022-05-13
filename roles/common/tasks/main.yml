@@ -51,6 +51,7 @@
     regexp: '^PermitRootLogin'
     line: 'PermitRootLogin no'
   tags: ssh
+  become: yes
   notify:
     - restart ssh 
 
@@ -80,6 +81,7 @@
     key: "{{ item }}"
   with_items: "{{ ssh_keys.goo_key }}"
   tags: users
+  become: yes
 
 - name: register current default zone 
   command: firewall-cmd --get-default-zone
@@ -88,7 +90,7 @@
 
 - name: print default zone
   debug:
-    msg: "default zone is: {{ default_zone }}"
+    msg: "default zone is: {{ default_zone.stdout }}"
   tags: firewall
 
 - name: create thedeep firewall zone
@@ -161,7 +163,7 @@
 - name: set block as default zone in firewalld if not set
   command: firewall-cmd --set-default-zone=block
   tags: firewall
-  when: default_zone != "block"
+  when: default_zone.stdout != "block"
   notify: restart firewalld
 
 - name: install relevant apt packages
@@ -170,5 +172,6 @@
     state: present
   with_items: "{{ packages }}"
   tags: packages
+  become: yes
 
 ...

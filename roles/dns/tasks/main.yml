@@ -2,49 +2,58 @@
 - name: register current default zone 
   command: firewall-cmd --get-default-zone
   register: default_zone
-  tags: firewall
+  tags: dns-firewall
 
 - name: print default zone
   debug:
-    msg: "default zone is: {{ default_zone }}"
-  tags: firewall
+    msg: "default zone is: {{ default_zone.stdout }}"
+  tags: dns-firewall
 
 - name: create dns firewall zone
   firewalld:
     zone: dns 
     state: present 
     permanent: yes
-  tags: firewall
+  tags: dns-firewall
   notify: restart firewalld
 
 - name: Flush handlers 
   meta: flush_handlers
-  tags: firewall
+  tags: dns-firewall
 
-- name: add dns port to dns zone
+- name: add dns udp port to dns zone
   firewalld:
-    port: 53/tcp
     port: 53/udp
     zone: dns 
     state: enabled
     immediate: yes
     permanent: yes
-  tags: firewall
+  tags: dns-firewall
   notify: restart firewalld
 
+- name: add dns udp port to dns zone
+  firewalld:
+    port: 53/tcp
+    zone: dns 
+    state: enabled
+    immediate: yes
+    permanent: yes
+  tags: dns-firewall
+  notify: restart firewalld
 - name: disable home zone for dns
+
   firewalld:
     zone: home 
     state: disabled
     permanent: yes
     immediate: yes
-  tags: firewall
+  tags: dns-firewall
   notify: restart firewalld
 
 - name: set block as default zone in firewalld if not set
   command: firewall-cmd --set-default-zone=block
-  tags: firewall
-  when: default_zone != "block"
+  tags: dns-firewall
+  when: default_zone.stdout != "block"
   notify: restart firewalld
 
 ...
