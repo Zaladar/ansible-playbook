@@ -1,0 +1,46 @@
+---
+#this should be standardized int oranges os that the firewalld tool can be utilized more efficiently.
+
+#access machine
+goo:
+  hosts:
+    192.168.50.244
+
+# DNS servers
+dns:
+  hosts:
+    pi-hole:
+      ansible_host: 192.168.50.42
+
+#privet machines, probably should not be used.
+private:
+  hosts:
+    Achenar:
+      ansible_host: 192.168.50.228
+    AchenarII: 
+      ansible_host: 192.168.50.229
+
+#add machines that act as storage.
+storage:
+  hosts:
+    polarisa: 
+      anisble_host: 192.168.50.51
+
+# add media servers if multiple.
+media:
+  hosts:
+    sirius: 
+      ansible_host: 192.168.50.66
+
+infra:
+  children:
+    media:
+    dns:
+    storage:
+
+home_network:
+  children:
+    infra:
+    private:
+    goo:
+
