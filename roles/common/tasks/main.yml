@@ -66,13 +66,14 @@
 #  notify:
 #    - restart ssh
 
-- name: copy hosts file
-  copy:
-    src: hosts
-    dest: /etc/hosts
-    owner: root
-    mode: '0644'
-    backup: yes
+      #- name: copy hosts file
+      #  copy:
+      #    src: #hosts
+      #    dest: /etc/hosts
+      #    owner: root
+      #    mode: '0644'
+      #    backup: yes
+      #  tags: hosts
 
 - name: Add ssh key to 'greatoldone'.
   authorized_key:
@@ -82,6 +83,16 @@
   with_items: "{{ ssh_keys.goo_key }}"
   tags: users
   become: yes
+
+- name: install relevant apt packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ packages }}"
+  tags: packages
+  become: yes
+  ignore_errors: yes
+  notify: restart firewalld
 
 - name: register current default zone 
   command: firewall-cmd --get-default-zone
@@ -166,12 +177,5 @@
   when: default_zone.stdout != "block"
   notify: restart firewalld
 
-- name: install relevant apt packages
-  package:
-    name: "{{ item }}"
-    state: present
-  with_items: "{{ packages }}"
-  tags: packages
-  become: yes
 
 ...
