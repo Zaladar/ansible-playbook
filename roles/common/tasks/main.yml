@@ -92,7 +92,11 @@
   tags: packages
   become: yes
   ignore_errors: yes
-  notify: restart firewalld
+  notify: start firewalld
+
+- name: Flush handlers 
+  meta: flush_handlers
+  tags: packages
 
 - name: register current default zone 
   command: firewall-cmd --get-default-zone
@@ -110,6 +114,7 @@
     state: present 
     permanent: yes
   tags: firewall
+  become: yes
   notify: restart firewalld
 
 - name: Flush handlers 
@@ -124,26 +129,29 @@
     immediate: yes
     permanent: yes
   tags: firewall
+  become: yes
   notify: restart firewalld
 
 - name: add ssh port for thedeep
   firewalld:
     zone: thedeep
-    port: 1984/tcp
+    service: ssh
     state: enabled
     immediate: yes
     permanent: yes
   tags: firewall
+  become: yes
   notify: restart firewalld
 
 - name: enable home zone
   firewalld:
-    port: 1984/tcp
+    service: ssh
     zone: home
     state: enabled
     permanent: yes
     immediate: yes
   tags: firewall
+  become: yes
   notify: restart firewalld
     
 #this should cover for SFTP sa well since it is ssh ftp.
@@ -176,6 +184,7 @@
   tags: firewall
   when: default_zone.stdout != "block"
   notify: restart firewalld
+  become: yes 
 
 
 ...
