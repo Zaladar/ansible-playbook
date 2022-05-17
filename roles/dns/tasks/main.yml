@@ -15,6 +15,7 @@
     state: present 
     permanent: yes
   tags: dns-firewall
+  become: yes
   notify: restart firewalld
 
 - name: Flush handlers 
@@ -29,6 +30,7 @@
     immediate: yes
     permanent: yes
   tags: dns-firewall
+  become: yes
   notify: restart firewalld
 
 - name: add dns udp port to dns zone
@@ -40,8 +42,20 @@
     permanent: yes
   tags: dns-firewall
   notify: restart firewalld
-- name: disable home zone for dns
+  become: yes
 
+- name: add ssh port to dns zone
+  firewalld:
+    port: 22/tcp
+    zone: dns 
+    state: enabled
+    immediate: yes
+    permanent: yes
+  tags: dns-firewall
+  notify: restart firewalld
+  become: yes
+
+- name: disable home zone for dns
   firewalld:
     zone: home 
     state: disabled
@@ -50,10 +64,11 @@
   tags: dns-firewall
   notify: restart firewalld
 
-- name: set block as default zone in firewalld if not set
-  command: firewall-cmd --set-default-zone=block
+- name: set dns as default zone in firewalld if not set
+  command: firewall-cmd --set-default-zone=dns
   tags: dns-firewall
-  when: default_zone.stdout != "block"
+  when: default_zone.stdout != "dns"
   notify: restart firewalld
+  become: yes
 
 ...
