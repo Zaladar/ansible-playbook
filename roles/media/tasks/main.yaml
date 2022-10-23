@@ -1,0 +1,9 @@
+---
+- name: install relevant packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ packages }}"
+  tags: packages
+  become: yes
+  ignore_errors: yes

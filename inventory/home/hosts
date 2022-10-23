@@ -29,8 +29,8 @@ storage:
 # add media servers if multiple.
 media:
   hosts:
-    sirius: 
-      ansible_host: 192.168.50.66
+    Vega: 
+      ansible_host: 192.168.50.39
 
 infra:
   children:
@@ -43,4 +43,3 @@ home_network:
     infra:
     private:
     goo:
-

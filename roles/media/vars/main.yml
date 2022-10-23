@@ -1,0 +1,5 @@
+---
+# add packages you wish to install.
+packages:
+  - nfs-utils
+  - kodi

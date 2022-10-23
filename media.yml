@@ -1,0 +1,6 @@
+- hosts: media
+  user: vega
+  roles:
+    - common
+    - media
+

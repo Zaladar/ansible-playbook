@@ -10,6 +10,7 @@
   tags: users
   become: yes
 
+# update to use sudoers
 - name: Allow 'greatoldone' group passwordless sudo.
   lineinfile:
     dest: /etc/sudoers
@@ -26,8 +27,18 @@
     dest: /etc/ssh/sshd_config 
     state: present
     backup: yes
-    regexp: '^.*PasswordAuthentication'
     line: 'PasswordAuthentication no'
+  tags: ssh 
+  become: yes
+  notify:
+    - restart ssh 
+
+- name: password authentication not allowed.
+  lineinfile:
+    dest: /etc/ssh/sshd_config 
+    state: absent
+    backup: yes
+    line: 'PasswordAuthentication yes'
   tags: ssh 
   become: yes
   notify:
@@ -37,8 +48,17 @@
   lineinfile:
     dest: /etc/ssh/sshd_config
     state: present
-    regexp: '^PermitRootLogin'
     line: 'PermitRootLogin no'
+  tags: ssh
+  become: yes
+  notify:
+    - restart ssh 
+    
+- name: ssh as root not allowed.
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    state: absent
+    line: 'PermitRootLogin yes'
   tags: ssh
   become: yes
   notify:
@@ -62,7 +82,7 @@
   tags: users
   become: yes
 
-- name: install relevant apt packages
+- name: install relevant packages
   package:
     name: "{{ item }}"
     state: present
