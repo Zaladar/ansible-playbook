@@ -1,9 +1,66 @@
 ---
-- name: install relevant packages
-  package:
+- name: Install relevant packages
+  ansible.builtin.package:
     name: "{{ item }}"
     state: present
   with_items: "{{ packages }}"
   tags: packages
-  become: yes
-  ignore_errors: yes
+  become: true
+  ignore_errors: true
+
+- name: Add source range to home zone
+  ansible.posix.firewalld:
+    source: 192.168.50.1/24
+    zone: home
+    state: enabled
+    permanent: true
+    immediate: true
+  tags: firewall
+  become: true
+  notify:
+    - Restart firewalld
+
+- name: Enable https for home network
+  ansible.posix.firewalld:
+    zone: home
+    service: https
+    state: enabled
+    permanent: true
+    immediate: true
+  tags: firewall
+  become: true
+  notify:
+    - Restart firewalld
+
+- name: Enable plex ports
+  ansible.posix.firewalld:
+    zone: home
+    port: "{{ item }}"
+    state: enabled
+  tags: firewall
+  become: true
+  with_items: "{{ plex_ports }}"
+  notify:
+    - Restart firewalld
+
+- name: Disable samba for home network
+  ansible.posix.firewalld:
+    zone: home
+    service: samba-client
+    state: disabled
+    permanent: true
+    immediate: true
+  tags: firewall
+  become: true
+  notify:
+    - Restart firewalld
+
+- name: Set block as default zone
+  ansible.builtin.command:
+    cmd: firewall-cmd --set-default-zone=block
+  tags: firewall
+  register: default_zone
+  changed_when:
+    - '"ZONE_ALREADY_SET" not in default_zone.stderr'
+  notify: Restart firewalld
+  become: true

@@ -2,4 +2,23 @@
 # add packages you wish to install.
 packages:
   - nfs-utils
-  - kodi
+  - base-devel
+  - cronie
+  - gtk3
+  - libgee
+  - libnotify
+  - libsoup
+  - rsync
+  - vte3
+  - xapp
+  - xorg-xhost
+  - vala
+  - appstream-glib
+  - nginx
+
+plex_ports:
+  - 32400/tcp
+  - 32469/tcp
+  - 32410/tcp
+  - 32412-32414/tcp
+  - 1900/udp
