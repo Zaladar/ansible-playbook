@@ -1,134 +1,138 @@
 ---
-- name: create greatoldone user.
-  user:
+- name: Create greatoldone user.
+  ansible.builtin.user:
     name: "greatoldone"
-      #groups: "greatoldone"
+    # groups: "greatoldone"
     shell: /bin/bash
     home: /home/greatoldone
-    create_home: yes
+    create_home: true
     state: present
   tags: users
-  become: yes
+  become: true
 
 # update to use sudoers
 - name: Allow 'greatoldone' group passwordless sudo.
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: /etc/sudoers
     state: present
-    backup: yes
+    backup: true
     regexp: '^%greatoldone'
     line: '%greatoldone ALL=(ALL) NOPASSWD: ALL'
-    validate: visudo -cf %s 
+    validate: visudo -cf %s
   tags: users
-  become: yes
+  become: true
 
-- name: password authentication not allowed.
-  lineinfile:
-    dest: /etc/ssh/sshd_config 
+- name: Password authentication not allowed.
+  ansible.builtin.lineinfile:
+    dest: /etc/ssh/sshd_config
     state: present
-    backup: yes
+    backup: true
     line: 'PasswordAuthentication no'
-  tags: ssh 
-  become: yes
+  tags: ssh
+  become: true
   notify:
-    - restart ssh 
+    - Restart SSH
 
-- name: password authentication not allowed.
-  lineinfile:
-    dest: /etc/ssh/sshd_config 
+- name: Password authentication not allowed.
+  ansible.builtin.lineinfile:
+    dest: /etc/ssh/sshd_config
     state: absent
-    backup: yes
+    backup: true
     line: 'PasswordAuthentication yes'
-  tags: ssh 
-  become: yes
+  tags: ssh
+  become: true
   notify:
-    - restart ssh 
+    - Restart SSH
 
-- name: ssh as root not allowed.
-  lineinfile:
+- name: Ssh as root not allowed.
+  ansible.builtin.lineinfile:
     dest: /etc/ssh/sshd_config
     state: present
     line: 'PermitRootLogin no'
   tags: ssh
-  become: yes
+  become: true
   notify:
-    - restart ssh 
-    
-- name: ssh as root not allowed.
-  lineinfile:
+    - Restart SSH
+
+- name: Ssh as root not allowed.
+  ansible.builtin.lineinfile:
     dest: /etc/ssh/sshd_config
     state: absent
     line: 'PermitRootLogin yes'
   tags: ssh
-  become: yes
+  become: true
   notify:
-    - restart ssh 
+    - Restart SSH
 
-      #- name: copy hosts file
-      #  copy:
-      #    src: #hosts
-      #    dest: /etc/hosts
-      #    owner: root
-      #    mode: '0644'
-      #    backup: yes
-      #  tags: hosts
+- name: Insert hostnames into hosts file
+  ansible.builtin.lineinfile:
+    dest: /etc/hosts
+    state: present
+    line: "{{ item }}"
+  with_items: "{{ hosts }}"
+  tags: hosts
+  become: true
 
 - name: Add ssh key to 'greatoldone'.
-  authorized_key:
+  ansible.posix.authorized_key:
     user: greatoldone
     state: present
     key: "{{ item }}"
   with_items: "{{ ssh_keys.goo_key }}"
   tags: users
-  become: yes
+  become: true
 
-- name: install relevant packages
-  package:
+- name: Install relevant packages
+  ansible.builtin.package:
     name: "{{ item }}"
     state: present
   with_items: "{{ packages }}"
   tags: packages
-  become: yes
-  ignore_errors: yes
-  notify: start firewalld
+  become: true
+  ignore_errors: true
+  notify: 
+    - Start firewalld
 
-- name: Flush handlers 
-  meta: flush_handlers
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
   tags: packages
 
-- name: create thedeep firewall zone
-  firewalld:
+- name: Create thedeep firewall zone
+  ansible.posix.firewalld:
     zone: thedeep
-    state: present 
-    permanent: yes
+    state: present
+    permanent: true
   tags: firewall
-  become: yes
-  notify: restart firewalld
+  become: true
+  notify: 
+    - Restart firewalld
 
-- name: Flush handlers 
-  meta: flush_handlers
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
   tags: firewall
 
-- name: add source to thedeep
-  firewalld:
+- name: Add source to thedeep
+  ansible.posix.firewalld:
     source: 192.168.50.244
     zone: thedeep
     state: enabled
-    immediate: yes
-    permanent: yes
+    permanent: true
+    immediate: true
   tags: firewall
-  become: yes
-  notify: restart firewalld
+  become: true
+  notify: 
+    - Restart firewalld
 
-- name: add ssh port for thedeep
-  firewalld:
+- name: Add ssh for thedeep
+  ansible.posix.firewalld:
     zone: thedeep
     service: ssh
     state: enabled
-    immediate: yes
-    permanent: yes
+    permanent: true
+    immediate: true
   tags: firewall
-  become: yes
-  notify: restart firewalld
+  become: true
+  notify: 
+    - Restart firewalld
 
 ...
