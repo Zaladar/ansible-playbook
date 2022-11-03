@@ -1,5 +1,5 @@
 - hosts: media
-  user: vega
+  user: greatoldone
   roles:
     - common
     - media

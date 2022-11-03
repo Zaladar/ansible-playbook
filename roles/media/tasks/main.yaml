@@ -32,11 +32,13 @@
   notify:
     - Restart firewalld
 
-- name: Enable plex ports
+- name: Enable plex ports in zone home
   ansible.posix.firewalld:
     zone: home
     port: "{{ item }}"
     state: enabled
+    permanent: true
+    immediate: true
   tags: firewall
   become: true
   with_items: "{{ plex_ports }}"

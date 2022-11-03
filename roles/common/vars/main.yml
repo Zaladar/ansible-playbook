@@ -17,15 +17,12 @@ packages:
   - traceroute  
   - curl
     #- telnet
-  - nc
   - neofetch
   - dnsutils
-  - bind-utils
   - vim
   - tree
   - firewalld
   - audit
   - git
-  - golang
   - python
 ...
