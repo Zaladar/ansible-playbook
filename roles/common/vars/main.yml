@@ -25,4 +25,6 @@ packages:
   - audit
   - git
   - python
+  - pam_yubico
+  - yubikey_manager
 ...
