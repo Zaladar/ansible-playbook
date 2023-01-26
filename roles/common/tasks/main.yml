@@ -22,6 +22,16 @@
   tags: users
   become: true
 
+- name: Ensure u2f_access exists.
+  ansible.builtin.copy:
+    src: u2f.src
+    path: /etc/u2f_access
+    owner: root
+    group: root
+    mode: 644
+    backup: true
+  tags: users
+
 - name: Remove password authentication allowed.
   ansible.builtin.lineinfile:
     dest: /etc/ssh/sshd_config
@@ -79,7 +89,9 @@
     state: present
     key: "{{ item }}"
   with_items: "{{ ssh_keys.goo_key }}"
-  tags: users
+  tags: 
+    - users
+      #- ssh
   become: true
 
 - name: Install relevant packages
