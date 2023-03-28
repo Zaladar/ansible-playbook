@@ -1,5 +1,4 @@
 ---
-
 - name: register current default zone 
   command: firewall-cmd --get-default-zone
   register: default_zone
