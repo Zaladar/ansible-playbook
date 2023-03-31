@@ -11,19 +11,26 @@
   become: true
 
 # update to use sudoers
-- name: Allow greatoldone group passwordless sudo.
-  ansible.builtin.lineinfile:
-    dest: /etc/sudoers
-    state: present
-    backup: true
-    regexp: '^%greatoldone'
-    line: '%greatoldone ALL=(ALL) NOPASSWD: ALL'
-    validate: visudo -cf %s
-  tags: users
-  become: true
+#- name: Allow greatoldone group passwordless sudo.
+#  ansible.builtin.lineinfile:
+#    dest: /etc/sudoers
+#    state: present
+#    backup: true
+#    regexp: '#%greatoldone'
+#    line: '%greatoldone ALL=(ALL) NOPASSWD: ALL'
+#    validate: visudo -cf %s
+#  tags: users
+#  become: true
 
 - name: Allow greatoldone group passwordless sudo.
   community.general.sudoers:
+    name: greatoldone-allow-passwordless
+    state: present
+    user: greatoldone
+    runas: ALL
+    commands: ALL
+  tags: users
+  become: true
 
 - name: Ensure u2f_access exists.
   ansible.builtin.copy:
@@ -47,48 +54,63 @@
       #- ssh
   become: true
 
-- name: Remove password authentication allowed.
-  ansible.builtin.lineinfile:
-    dest: /etc/ssh/sshd_config
-    state: absent
-    backup: true
-    line: 'PasswordAuthentication yes'
-  tags: ssh
-  become: true
-  notify:
-    - Restart SSH
+#- name: Remove password authentication allowed.
+#  ansible.builtin.lineinfile:
+#    dest: /etc/ssh/sshd_config
+#    state: absent
+#    backup: true
+#    line: 'PasswordAuthentication yes'
+#  tags: ssh
+#  become: true
+#  notify:
+#    - Restart SSH
+#
+#- name: Password authentication not allowed.
+#  ansible.builtin.lineinfile:
+#    dest: /etc/ssh/sshd_config
+#    state: present
+#    backup: true
+#    line: 'PasswordAuthentication no'
+#  tags: ssh
+#  become: true
+#  notify:
+#    - Restart SSH
+#
+#- name: Remove ssh as root allowed.
+#  ansible.builtin.lineinfile:
+#    dest: /etc/ssh/sshd_config
+#    state: absent
+#    line: 'PermitRootLogin yes'
+#  tags: ssh
+#  become: true
+#  notify:
+#    - Restart SSH
+#
+#- name: Ssh as root not allowed.
+#  ansible.builtin.lineinfile:
+#    dest: /etc/ssh/sshd_config
+#    state: present
+#    line: 'PermitRootLogin no'
+#  tags: ssh
+#  become: true
+#  notify:
+#    - Restart SSH
+#
+- name: with_dict
+  ansible.builtin.debug:
+    msg: "{{ item.key }} - {{ item.value }}"
+  with_dict: "{{ sshd_config_vars }}"
 
-- name: Password authentication not allowed.
-  ansible.builtin.lineinfile:
-    dest: /etc/ssh/sshd_config
+- name: Configure sshd
+  lineinfile:
+    path: "/etc/ssh/sshd_config"
+    regex: "^(# *)?{{item.key}}"
+    line: "{{item.key}} {{item.value}}"
     state: present
-    backup: true
-    line: 'PasswordAuthentication no'
-  tags: ssh
+  with_dict: "{{ sshd_config_vars }}"
   become: true
   notify:
-    - Restart SSH
-
-- name: Remove ssh as root allowed.
-  ansible.builtin.lineinfile:
-    dest: /etc/ssh/sshd_config
-    state: absent
-    line: 'PermitRootLogin yes'
-  tags: ssh
-  become: true
-  notify:
-    - Restart SSH
-
-- name: Ssh as root not allowed.
-  ansible.builtin.lineinfile:
-    dest: /etc/ssh/sshd_config
-    state: present
-    line: 'PermitRootLogin no'
-  tags: ssh
-  become: true
-  notify:
-    - Restart SSH
-
+    - Restart sshd 
 - name: Insert hostnames into hosts file
   ansible.builtin.lineinfile:
     dest: /etc/hosts
@@ -151,4 +173,5 @@
   notify: 
     - Restart firewalld
 
+# insert logic for pam modules and yubi key requirements here.
 ...
