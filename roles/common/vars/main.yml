@@ -9,6 +9,11 @@ hosts:
   - 192.168.50.42 pi-hole
   - 192.168.50.51 polaris 
 
+#ssh config
+sshd_config_vars:
+  - {key: "PermitRootLogin", value:  "no" }
+  - {key: "PasswordAuthentication", value: "no"}
+
 # add packages you wish to install.
 packages:
   - htop
