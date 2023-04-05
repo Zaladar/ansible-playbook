@@ -5,17 +5,41 @@ ssh_keys:
     - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC9G0YpI6HymB8Fs0NSnz69ixqrYkbSKQFWIgahEwZ2TqalyF9JWzFn5OJLk8Q3y6iGaKo7lKTYPSLe+F1wazgy9ugdfioRPvacBUBaISF96M7ZEnfnDaUTLXpeXdMvrAIiQ6vj1sUds/EDEzWEvm+hFBc4cV/EcjQb1H6B+QFV85cLnuVRdHng0V5NO0YRsde+9k0W4koFbzEnMbMz7W5gdJBYVveZawmi0LxOFBTTxNDPT6hcaUzxGDvGYfWYSJatWd9JA6RsUWMqo9LCm7i5+i45/EjKdnzrbGjmYEEvsrLUGJhoUgm49BuuYNf/Yy+ah7t15lwWVOjWv+WRh/pC9rwhmNNv8QZGaztKlFJncoxUHG3HLWOUAPizxFu4WUm5DSLivoMCaRJT01bgmrLG+TsV0vyzDhyDE5FJMBA0myJ1/HS/2262OPBdGgBbytl45CyHkM4u3cYhGOpNAyQp5QCoEX6xmoHk2tYMoOeXDUhrL+KzJSKf2zZk7V8pMPZukaK7xpo7cbsI6zd0BtZaP4cF/8tdd1LY1FVOCuEgbqRQ5ohdKk6WuHW3Y8GAzwURL5qeVufTJIKiB5nwdSoabxcLehH24QndpFSZtBr4xB0nHDmG9JUhJD2UDqYnyVpVn+nWFwKt546m5qlyFXEOEHDX+Ar8Nb3YmMftGpWVWQ== Oscar@fedora
     - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCWDMuVGGKlSzRsrSirFghSzQAuix8xhGDXnY44f3wZXyYkHLbySf8ivIK6MtW5DSNW6N2fnaiJt9zG4bXON7VuZq8n2/ttNg+IKlHBu/TPVxsUlWL1wEXOpZ/hvfBG6McNCFR8UT+rp2wopDa2/O23aVWkdOaZ03pe3Lmeurz0/FFS5lVS7d9k1UqZ//3iTzg9f29ikk4/ddxHNlPY2N9kvPRTg+GlKdS9+hPPzo5Xn5uh2QJls+ljznx7H32/A9XVYBpzjlumlWJbq5xTeKBtZQ+wYXNARWPk2lNQILutB7z+WnLVDM89C5l+2XCrN4PbFMgAU+GTIlNJv4JAvwOEU3AvMdYRc584QcgNLdHoV2sCzjCg54mfs0vNDbV0OmiJ0R9JOOeq2YceyEowRg+tV1WWKFtCrmlmCbyVaafeB0C6gtQADMOzkxeF/qSlkXBnLqL1wc8JO5h1eunR9qf5MZj8ddFv+AoPmYtdqUj0XgrryUgyTiYqu1sg3H/OuSRvnuOmF72LfBuTESwsNSCnZNRoMRSdePIjb5pvMuRiTU5um1v5BeNPd7cVd0UNnnTR+BIf+r4UgWAmX/uoaST8Fr4UfA5meOwHSscYJt/ivjxqtkfIRSU91fP0R4Z02TYBOhDQf7hVOgNdwYXPgj3boVPAFWxWFrOQywwV7rO1Xw== killerrabbit@AchenarIV
 
-hosts:
+hosts_file:
   - 192.168.50.42 pi-hole
   - 192.168.50.51 polaris
 
 sshd_config_vars:
-  - {key: "PermitRootLogin", value: "no" }
-  - {key: "PasswordAuthentication", value: "no"}
+  - key: PermitRootLogin
+    value: "no"
+  - key: PasswordAuthentication
+    value: "no"
 
 pamd_config_vars:
-  - {name: "login", type: "auth", control: "sufficient", module: "pam_u2f.so", arguments: "cue,authfile=/etc/u2f_access", state: "present"}
-    # auth    sufficient      pam_u2f.so cue  authfile=/etc/u2f_mappings debug
+  - name: login
+    type: auth
+    control: sufficient
+    module: pam_u2f.so
+    arguments: cue,authfile=/etc/u2f_access,debug
+    state: args_present
+  - name: sudo
+    type: auth
+    control: sufficient
+    module: pam_u2f.so
+    arguments: cue,authfile=/etc/u2f_access
+    state: args_present
+  - name: su
+    type: auth
+    control: sufficient
+    module: pam_u2f.so
+    arguments: cue,authfile=/etc/u2f_access
+    state: args_present 
+  - name: sshd 
+    type: auth
+    control: sufficient
+    module: pam_u2f.so
+    arguments: cue,authfile=/etc/u2f_access
+    state: args_present 
 
 
 # add packages you wish to install.

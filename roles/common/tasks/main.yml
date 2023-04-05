@@ -46,7 +46,7 @@
     regex: "^(# *)?{{ item.key }}"
     line: "{{ item.key }} {{ item.value }}"
     state: present
-  with_dict: "{{ sshd_config_vars }}"
+  loop: "{{ sshd_config_vars }}"
   become: true
   notify:
     - Restart sshd
@@ -56,7 +56,7 @@
     dest: /etc/hosts
     state: present
     line: "{{ item }}"
-  with_items: "{{ hosts }}"
+  loop: "{{ hosts_file }}"
   tags: hosts
   become: true
 
@@ -113,12 +113,15 @@
   notify:
     - Restart firewalld
 
-# insert logic for pam modules and yubi key requirements here.
 - name: Add yubikey requirement to pam modules
   community.general.pamd:
     name: "{{ item.name }}"
     type: "{{ item.type }}"
     control: "{{ item.control }}"
     module_path: "{{ item.module }}"
-  with_dict: "{{ pamd_config }}"
+    module_arguments: "{{ item.arguments }}"
+    state: "{{ item.state }}"
+  loop: "{{ pamd_config_vars }}"
+  tags: pamd
+  become: true
 ...
