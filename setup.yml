@@ -7,9 +7,15 @@
     - common
     - dns
 
-- hosts: goo
+      #- hosts: goo
+      #  user: greatoldone
+      #  roles:
+      #    - common
+      #    - deep
+
+- hosts: media
   user: greatoldone
   roles:
     - common
-    - deep
-...
+    - media
+
