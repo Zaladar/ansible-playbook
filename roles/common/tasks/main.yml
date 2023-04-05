@@ -114,4 +114,11 @@
     - Restart firewalld
 
 # insert logic for pam modules and yubi key requirements here.
+- name: Add yubikey requirement to pam modules
+  community.general.pamd:
+    name: "{{ item.name }}"
+    type: "{{ item.type }}"
+    control: "{{ item.control }}"
+    module_path: "{{ item.module }}"
+  with_dict: "{{ pamd_config }}"
 ...
