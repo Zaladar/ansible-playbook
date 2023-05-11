@@ -33,7 +33,7 @@
   become: yes
   notify: restart firewalld
 
-- name: add dns udp port to dns zone
+- name: add dns tcp port to dns zone
   firewalld:
     port: 53/tcp
     zone: dns 
