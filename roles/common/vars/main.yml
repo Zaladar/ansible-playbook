@@ -58,5 +58,5 @@ packages:
   - git
   - python
   - pam-u2f
-  - yubikey_manager
+    # - yubikey_manager
 ...
