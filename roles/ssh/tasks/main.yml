@@ -1,0 +1,6 @@
+---
+# tasks file for ssh
+- name: Ensure sshd_config is correct
+  ansible.builtin.template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config.d/10-sshd_config.conf
